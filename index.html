@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrenchZone - Officiel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* --- ESTHÉTIQUE GÉNÉRALE & THÈME --- */
+        :root {
+            /* Couleur par défaut (avant chargement de l'image) */
+            --accent-color: #ffffff; 
+            
+            --bg-color: #0f0f0f;
+            --text-color: #ffffff;
+            --glass-bg: rgba(15, 15, 15, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            /* Transition douce quand la couleur change */
+            transition: background 0.5s ease;
+        }
+
+        /* Image de fond gérée via HTML maintenant pour l'analyse couleur */
+        #bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0; /* Caché au début, apparition en fondu */
+            transition: opacity 1s ease;
+        }
+
+        /* Calque noir semi-transparent */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        /* --- CANVAS --- */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- CONTENEUR --- */
+        .container {
+            width: 88%;
+            max-width: 420px;
+            text-align: center;
+            padding: 40px 0;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* --- HEADER --- */
+        header { margin-bottom: 25px; }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin: 0;
+            /* text-transform: uppercase; supprimé pour garder la casse FrenchZone */
+            color: white;
+            text-shadow: 0 0 30px var(--accent-color);
+            transition: text-shadow 1s ease;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* --- VISUEL --- */
+        .visual-container {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Force le format carré 1:1 */
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.9);
+            border: 1px solid var(--glass-border);
+        }
+
+        .hero-visual {
+            width: 100%;
+            height: 100%; /* Remplit toute la hauteur du conteneur carré */
+            object-fit: cover; /* Recadre l'image intelligemment (zoom) pour ne pas l'écraser */
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .hero-visual:hover { transform: scale(1.03); }
+
+        .badge-overlay {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 1px solid var(--glass-border);
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        .live-dot {
+            width: 6px; height: 6px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-color);
+            animation: pulse 2s infinite;
+            transition: background-color 1s ease, box-shadow 1s ease;
+        }
+
+        /* --- INFO BOX --- */
+        .info-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 30px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-box::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+            transition: background 1s ease, box-shadow 1s ease;
+        }
+
+        .info-box h2 {
+            font-size: 0.85rem; text-transform: uppercase; color: #ccc;
+            margin: 0 0 8px 0; font-weight: 600;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .info-box p { font-size: 1rem; font-weight: 500; margin: 0; line-height: 1.4; }
+
+        /* --- LIENS --- */
+        .links-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+        .link-btn {
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            padding: 18px 24px;
+            background: rgba(30, 30, 30, 0.6);
+            color: white; text-decoration: none;
+            border-radius: 14px; font-weight: 600; font-size: 0.95rem;
+            transition: all 0.25s ease;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(4px); overflow: hidden;
+        }
+
+        .link-icon {
+            position: absolute; left: 20px; width: 20px; height: 20px;
+            opacity: 0.8; transition: opacity 0.2s;
+        }
+        
+        .arrow-icon {
+            position: absolute; right: 20px; width: 16px; height: 16px;
+            opacity: 0; transform: translateX(-10px); transition: all 0.3s ease;
+        }
+
+        .link-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5), inset 0 0 0 1px var(--accent-color); 
+        }
+
+        .link-btn:hover .arrow-icon {
+            opacity: 0.8; transform: translateX(0); color: var(--accent-color);
+        }
+
+        .link-btn:active { transform: scale(0.98); }
+
+        .link-btn.highlight {
+            background: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-color);
+            color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            transition: background 1s ease, box-shadow 1s ease, border 1s ease;
+        }
+        
+        .link-btn.highlight:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 35px var(--accent-color);
+        }
+        
+        .link-btn.highlight .arrow-icon { color: white; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 60px; font-size: 0.75rem; color: #aaa;
+            display: flex; flex-direction: column; gap: 10px;
+            text-shadow: 0 1px 3px rgba(0,0,0,1);
+        }
+
+        .social-icons-row { display: flex; gap: 20px; justify-content: center; margin-bottom: 10px; }
+        .social-mini { color: #ccc; transition: color 0.3s, transform 0.2s; }
+        .social-mini:hover { color: var(--accent-color); transform: scale(1.1); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
+    </style>
+</head>
+<body>
+
+    <!-- Image de fond avec support Cross-Origin pour l'analyse couleur -->
+    <!-- CHANGE CETTE URL POUR TESTER D'AUTRES COULEURS -->
+    <img id="bg-image" 
+         src="https://kuochsia.github.io/frenchzone/FrenchZone.green.png" 
+         crossorigin="anonymous" 
+         alt="Background">
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        
+        <header>
+            <h1>FrenchZone</h1>
+            <!-- Sous-titre "Music Band" supprimé -->
+        </header>
+
+        <div class="visual-container">
+            <div class="badge-overlay">
+                <span class="live-dot"></span> New Release
+            </div>
+            <img src="https://kuochsia.github.io/frenchzone/Raclette.cover.png" 
+                 alt="FrenchZone Visual" 
+                 class="hero-visual"
+                 onerror="this.src='https://placehold.co/600x400/1a1a1a/FFF?text=FrenchZone'">
+        </div>
+
+        <div class="info-box">
+            <h2><i data-lucide="bell" style="width:14px;"></i> Prochaine Sortie</h2>
+            <p>Le single <strong>"Midnight Pulse"</strong> disponible partout le 24 Octobre à minuit.</p>
+        </div>
+
+        <div class="links-list">
+            <a href="#" class="link-btn highlight">
+                <i data-lucide="music" class="link-icon"></i>
+                Pre-Save sur Spotify
+                <i data-lucide="arrow-right" class="arrow-icon"></i>
+            </a>
+            <a href="#" class="link-btn">
+                <i data-lucide="headphones" class="link-icon"></i>
+                Apple Music
+                <i data-lucide="arrow-right" class="arrow-icon"></i>
+            </a>
+            <a href="#" class="link-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-icon"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c5-2 9-1 10.5 0"/><path d="M8.5 14.5c4-1.5 7.5-.5 9 0"/><path d="M9 17.5c3-1 6-.5 7 0"/></svg>
+                Spotify
+                <i data-lucide="arrow-right" class="arrow-icon"></i>
+            </a>
+             <a href="#" class="link-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-icon"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5v2a7 7 0 0 1-7-7z"/></svg>
+                TikTok
+                <i data-lucide="arrow-right" class="arrow-icon"></i>
+            </a>
+            <a href="#" class="link-btn">
+                <i data-lucide="facebook" class="link-icon"></i>
+                Facebook
+                <i data-lucide="arrow-right" class="arrow-icon"></i>
+            </a>
+            <a href="#" class="link-btn">
+                <i data-lucide="instagram" class="link-icon"></i>
+                Instagram
+                <i data-lucide="arrow-right" class="arrow-icon"></i>
+            </a>
+            <a href="#" class="link-btn">
+                <i data-lucide="youtube" class="link-icon"></i>
+                YouTube Channel
+                <i data-lucide="arrow-right" class="arrow-icon"></i>
+            </a>
+        </div>
+
+        <footer>
+            <div class="social-icons-row">
+                <a href="#" class="social-mini"><i data-lucide="facebook" width="18"></i></a>
+                <a href="#" class="social-mini"><i data-lucide="instagram" width="18"></i></a>
+                <a href="#" class="social-mini"><i data-lucide="mail" width="18"></i></a>
+            </div>
+            <span>FrenchZone © 2024. All rights reserved.</span>
+        </footer>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- 1. CONFIGURATION CANVAS ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        const bgImage = document.getElementById('bg-image');
+
+        let width, height;
+        let particles = [];
+        let config = {
+            particleCount: 50,
+            connectionDist: 120,
+            speed: 0.3,
+            baseColor: '255, 255, 255' // Blanc par défaut
+        };
+
+        // --- 2. ANALYSE DE L'IMAGE (EXTRACTION COULEUR) ---
+        bgImage.onload = function() {
+            try {
+                // Créer un mini canvas invisible pour lire les pixels
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = 1;
+                tempCanvas.height = 1;
+
+                // Dessiner l'image réduite à 1 pixel (fait la moyenne automatiquement)
+                tempCtx.drawImage(bgImage, 0, 0, 1, 1);
+                
+                // Récupérer les données RGBA
+                const [r, g, b] = tempCtx.getImageData(0, 0, 1, 1).data;
+                
+                // --- AJUSTEMENT INTELLIGENT ---
+                // Si la couleur est trop sombre, on l'éclaircit pour le thème
+                // On calcule la luminosité perçue
+                const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                
+                let finalR = r, finalG = g, finalB = b;
+                
+                // Si très sombre (< 50 sur 255), on force une teinte plus vive
+                if (brightness < 40) {
+                    // On garde la teinte mais on monte la luminosité
+                    finalR = Math.min(r + 80, 255);
+                    finalG = Math.min(g + 80, 255);
+                    finalB = Math.min(b + 80, 255);
+                }
+
+                const rgbString = `${finalR}, ${finalG}, ${finalB}`;
+                const cssRgb = `rgb(${rgbString})`;
+
+                // 1. Appliquer au CSS (pour boutons, texte, etc.)
+                document.documentElement.style.setProperty('--accent-color', cssRgb);
+                
+                // 2. Mettre à jour la config des particules
+                config.baseColor = rgbString;
+                
+                // 3. Afficher l'image en douceur
+                bgImage.style.opacity = 1;
+
+            } catch (e) {
+                console.warn("Impossible d'extraire la couleur (CORS ou sécurité)", e);
+                // Fallback si erreur : on affiche quand même l'image
+                bgImage.style.opacity = 1;
+                // Couleur de secours (Violet FrenchZone)
+                document.documentElement.style.setProperty('--accent-color', '#7d2ae8');
+                config.baseColor = '125, 42, 232';
+            }
+        };
+
+        // --- 3. SYSTEME DE PARTICULES ---
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * config.speed;
+                this.vy = (Math.random() - 0.5) * config.speed;
+                this.size = Math.random() * 2 + 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(${config.baseColor}, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = width < 600 ? 30 : config.particleCount;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                
+                for (let j = index + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < config.connectionDist) {
+                        ctx.beginPath();
+                        const opacity = 1 - (dist / config.connectionDist);
+                        ctx.strokeStyle = `rgba(${config.baseColor}, ${opacity * 0.3})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            initParticles();
+        });
+        
+        resize();
+        initParticles();
+        animate();
+    </script>
+</body>
+</html>
