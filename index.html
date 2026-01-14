@@ -9,8 +9,8 @@
     <style>
         /* --- ESTHÉTIQUE GÉNÉRALE & THÈME --- */
         :root {
-            /* Couleur par défaut (avant chargement de l'image) */
-            --accent-color: #ffffff; 
+            /* THÈME ROUGE FIXE */
+            --accent-color: #ff3b3b; 
             
             --bg-color: #0f0f0f;
             --text-color: #ffffff;
@@ -30,11 +30,10 @@
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            /* Transition douce quand la couleur change */
             transition: background 0.5s ease;
         }
 
-        /* Image de fond gérée via HTML maintenant pour l'analyse couleur */
+        /* Image de fond */
         #bg-image {
             position: fixed;
             top: 0;
@@ -43,7 +42,7 @@
             height: 100%;
             object-fit: cover;
             z-index: -2;
-            opacity: 0; /* Caché au début, apparition en fondu */
+            opacity: 0; /* Apparition en fondu gérée par JS */
             transition: opacity 1s ease;
         }
 
@@ -85,10 +84,9 @@
             font-weight: 800;
             letter-spacing: -1px;
             margin: 0;
-            /* text-transform: uppercase; supprimé pour garder la casse FrenchZone */
+            /* Pas de uppercase pour garder FrenchZone */
             color: white;
             text-shadow: 0 0 30px var(--accent-color);
-            transition: text-shadow 1s ease;
         }
 
         .subtitle {
@@ -103,7 +101,7 @@
         /* --- VISUEL --- */
         .visual-container {
             width: 100%;
-            aspect-ratio: 1 / 1; /* Force le format carré 1:1 */
+            aspect-ratio: 1 / 1; /* Carré 1:1 */
             position: relative;
             margin-bottom: 30px;
             border-radius: 16px;
@@ -114,8 +112,8 @@
 
         .hero-visual {
             width: 100%;
-            height: 100%; /* Remplit toute la hauteur du conteneur carré */
-            object-fit: cover; /* Recadre l'image intelligemment (zoom) pour ne pas l'écraser */
+            height: 100%;
+            object-fit: cover;
             display: block;
             transition: transform 0.5s ease;
         }
@@ -141,7 +139,6 @@
             border-radius: 50%;
             box-shadow: 0 0 8px var(--accent-color);
             animation: pulse 2s infinite;
-            transition: background-color 1s ease, box-shadow 1s ease;
         }
 
         /* --- INFO BOX --- */
@@ -167,7 +164,6 @@
             width: 4px;
             background: var(--accent-color);
             box-shadow: 0 0 10px var(--accent-color);
-            transition: background 1s ease, box-shadow 1s ease;
         }
 
         .info-box h2 {
@@ -198,10 +194,7 @@
             opacity: 0.8; transition: opacity 0.2s;
         }
         
-        .arrow-icon {
-            position: absolute; right: 20px; width: 16px; height: 16px;
-            opacity: 0; transform: translateX(-10px); transition: all 0.3s ease;
-        }
+        /* CSS flèche supprimé ici */
 
         .link-btn:hover {
             background: rgba(255, 255, 255, 0.1);
@@ -210,9 +203,7 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.5), inset 0 0 0 1px var(--accent-color); 
         }
 
-        .link-btn:hover .arrow-icon {
-            opacity: 0.8; transform: translateX(0); color: var(--accent-color);
-        }
+        /* Hover flèche supprimé ici */
 
         .link-btn:active { transform: scale(0.98); }
 
@@ -221,7 +212,6 @@
             border: 1px solid var(--accent-color);
             box-shadow: 0 0 20px var(--accent-color);
             color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-            transition: background 1s ease, box-shadow 1s ease, border 1s ease;
         }
         
         .link-btn.highlight:hover {
@@ -229,7 +219,7 @@
             box-shadow: 0 0 35px var(--accent-color);
         }
         
-        .link-btn.highlight .arrow-icon { color: white; }
+        /* Highlight flèche supprimé ici */
 
         /* --- FOOTER --- */
         footer {
@@ -248,11 +238,9 @@
 </head>
 <body>
 
-    <!-- Image de fond avec support Cross-Origin pour l'analyse couleur -->
-    <!-- CHANGE CETTE URL POUR TESTER D'AUTRES COULEURS -->
+    <!-- Image de fond -->
     <img id="bg-image" 
-         src="https://kuochsia.github.io/frenchzone/FrenchZone.green.png" 
-         crossorigin="anonymous" 
+         src="FrenchZone.red.square.png" 
          alt="Background">
 
     <canvas id="bg-canvas"></canvas>
@@ -261,14 +249,13 @@
         
         <header>
             <h1>FrenchZone</h1>
-            <!-- Sous-titre "Music Band" supprimé -->
         </header>
 
         <div class="visual-container">
             <div class="badge-overlay">
                 <span class="live-dot"></span> New Release
             </div>
-            <img src="https://kuochsia.github.io/frenchzone/Raclette.cover.png" 
+            <img src="Raclette.cover.small.png" 
                  alt="FrenchZone Visual" 
                  class="hero-visual"
                  onerror="this.src='https://placehold.co/600x400/1a1a1a/FFF?text=FrenchZone'">
@@ -283,37 +270,30 @@
             <a href="#" class="link-btn highlight">
                 <i data-lucide="music" class="link-icon"></i>
                 Pre-Save sur Spotify
-                <i data-lucide="arrow-right" class="arrow-icon"></i>
             </a>
             <a href="#" class="link-btn">
                 <i data-lucide="headphones" class="link-icon"></i>
                 Apple Music
-                <i data-lucide="arrow-right" class="arrow-icon"></i>
             </a>
             <a href="#" class="link-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-icon"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c5-2 9-1 10.5 0"/><path d="M8.5 14.5c4-1.5 7.5-.5 9 0"/><path d="M9 17.5c3-1 6-.5 7 0"/></svg>
                 Spotify
-                <i data-lucide="arrow-right" class="arrow-icon"></i>
             </a>
-             <a href="#" class="link-btn">
+             <a href="https://www.tiktok.com/@frenchzonemusic" class="link-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-icon"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5v2a7 7 0 0 1-7-7z"/></svg>
                 TikTok
-                <i data-lucide="arrow-right" class="arrow-icon"></i>
             </a>
-            <a href="#" class="link-btn">
+            <a href="https://www.facebook.com/people/Frenchzonemusic/61586268636484/" class="link-btn">
                 <i data-lucide="facebook" class="link-icon"></i>
                 Facebook
-                <i data-lucide="arrow-right" class="arrow-icon"></i>
             </a>
-            <a href="#" class="link-btn">
+            <a href="https://www.instagram.com/frenchzonemusic/" class="link-btn">
                 <i data-lucide="instagram" class="link-icon"></i>
                 Instagram
-                <i data-lucide="arrow-right" class="arrow-icon"></i>
             </a>
-            <a href="#" class="link-btn">
+            <a href="https://www.youtube.com/@FrenchZoneMusic" class="link-btn">
                 <i data-lucide="youtube" class="link-icon"></i>
                 YouTube Channel
-                <i data-lucide="arrow-right" class="arrow-icon"></i>
             </a>
         </div>
 
@@ -342,60 +322,18 @@
             particleCount: 50,
             connectionDist: 120,
             speed: 0.3,
-            baseColor: '255, 255, 255' // Blanc par défaut
+            baseColor: '255, 59, 59' // Rouge manuel (R, G, B)
         };
 
-        // --- 2. ANALYSE DE L'IMAGE (EXTRACTION COULEUR) ---
+        // --- 2. AFFICHAGE IMAGE (Plus d'analyse couleur) ---
         bgImage.onload = function() {
-            try {
-                // Créer un mini canvas invisible pour lire les pixels
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCanvas.width = 1;
-                tempCanvas.height = 1;
-
-                // Dessiner l'image réduite à 1 pixel (fait la moyenne automatiquement)
-                tempCtx.drawImage(bgImage, 0, 0, 1, 1);
-                
-                // Récupérer les données RGBA
-                const [r, g, b] = tempCtx.getImageData(0, 0, 1, 1).data;
-                
-                // --- AJUSTEMENT INTELLIGENT ---
-                // Si la couleur est trop sombre, on l'éclaircit pour le thème
-                // On calcule la luminosité perçue
-                const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-                
-                let finalR = r, finalG = g, finalB = b;
-                
-                // Si très sombre (< 50 sur 255), on force une teinte plus vive
-                if (brightness < 40) {
-                    // On garde la teinte mais on monte la luminosité
-                    finalR = Math.min(r + 80, 255);
-                    finalG = Math.min(g + 80, 255);
-                    finalB = Math.min(b + 80, 255);
-                }
-
-                const rgbString = `${finalR}, ${finalG}, ${finalB}`;
-                const cssRgb = `rgb(${rgbString})`;
-
-                // 1. Appliquer au CSS (pour boutons, texte, etc.)
-                document.documentElement.style.setProperty('--accent-color', cssRgb);
-                
-                // 2. Mettre à jour la config des particules
-                config.baseColor = rgbString;
-                
-                // 3. Afficher l'image en douceur
-                bgImage.style.opacity = 1;
-
-            } catch (e) {
-                console.warn("Impossible d'extraire la couleur (CORS ou sécurité)", e);
-                // Fallback si erreur : on affiche quand même l'image
-                bgImage.style.opacity = 1;
-                // Couleur de secours (Violet FrenchZone)
-                document.documentElement.style.setProperty('--accent-color', '#7d2ae8');
-                config.baseColor = '125, 42, 232';
-            }
+            // On affiche juste l'image quand elle est prête
+            bgImage.style.opacity = 1;
         };
+        // Au cas où elle est déjà chargée (cache)
+        if(bgImage.complete) {
+             bgImage.style.opacity = 1;
+        }
 
         // --- 3. SYSTEME DE PARTICULES ---
         function resize() {
