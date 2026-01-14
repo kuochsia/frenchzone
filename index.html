@@ -187,6 +187,14 @@
             transition: all 0.25s ease;
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(4px); overflow: hidden;
+            cursor: pointer; /* Indique que c'est cliquable */
+        }
+
+        /* Classe pour désactiver les boutons temporairement */
+        .link-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none; /* Empêche le clic */
+            filter: grayscale(100%); /* Rend le bouton gris */
         }
 
         .link-icon {
@@ -194,16 +202,12 @@
             opacity: 0.8; transition: opacity 0.2s;
         }
         
-        /* CSS flèche supprimé ici */
-
         .link-btn:hover {
             background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
             border-color: rgba(255,255,255,0.3);
             box-shadow: 0 5px 20px rgba(0,0,0,0.5), inset 0 0 0 1px var(--accent-color); 
         }
-
-        /* Hover flèche supprimé ici */
 
         .link-btn:active { transform: scale(0.98); }
 
@@ -219,8 +223,6 @@
             box-shadow: 0 0 35px var(--accent-color);
         }
         
-        /* Highlight flèche supprimé ici */
-
         /* --- FOOTER --- */
         footer {
             margin-top: 60px; font-size: 0.75rem; color: #aaa;
@@ -232,6 +234,81 @@
         .social-mini { color: #ccc; transition: color 0.3s, transform 0.2s; }
         .social-mini:hover { color: var(--accent-color); transform: scale(1.1); }
 
+        /* --- MODAL (POPUP PRE-SAVE) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none; /* Caché par défaut */
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 500px;
+            height: 80vh;
+            background: #111;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover { background: var(--accent-color); }
+
+        .embed-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .fallback-link {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background: #000;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .fallback-link a { color: var(--accent-color); }
+
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
     </style>
@@ -240,7 +317,7 @@
 
     <!-- Image de fond -->
     <img id="bg-image" 
-         src="FrenchZone.red.square.png" 
+         src="https://kuochsia.github.io/frenchzone/FrenchZone.red.square.png" 
          alt="Background">
 
     <canvas id="bg-canvas"></canvas>
@@ -255,7 +332,7 @@
             <div class="badge-overlay">
                 <span class="live-dot"></span> New Release
             </div>
-            <img src="Raclette.cover.small.png" 
+            <img src="https://kuochsia.github.io/frenchzone/Raclette.cover.small.png" 
                  alt="FrenchZone Visual" 
                  class="hero-visual"
                  onerror="this.src='https://placehold.co/600x400/1a1a1a/FFF?text=FrenchZone'">
@@ -263,22 +340,28 @@
 
         <div class="info-box">
             <h2><i data-lucide="bell" style="width:14px;"></i> Prochaine Sortie</h2>
-            <p>Le single <strong>"Midnight Pulse"</strong> disponible partout le 24 Octobre à minuit.</p>
+            <p>Le single <strong>"Raclette, c'est super chouette!"</strong> disponible partout le 31 Janvier 2026 à midi.</p>
         </div>
 
         <div class="links-list">
-            <a href="#" class="link-btn highlight">
+            <!-- Bouton Pre-save MODIFIÉ pour ouvrir la modale -->
+            <!-- Note: On utilise un bouton <a> qui déclenche le JS -->
+            <a onclick="openModal()" class="link-btn highlight">
                 <i data-lucide="music" class="link-icon"></i>
                 Pre-Save sur Spotify
             </a>
-            <a href="#" class="link-btn">
+            
+            <!-- Boutons désactivés -->
+            <a href="#" class="link-btn disabled">
                 <i data-lucide="headphones" class="link-icon"></i>
                 Apple Music
             </a>
-            <a href="#" class="link-btn">
+            <a href="#" class="link-btn disabled">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-icon"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c5-2 9-1 10.5 0"/><path d="M8.5 14.5c4-1.5 7.5-.5 9 0"/><path d="M9 17.5c3-1 6-.5 7 0"/></svg>
                 Spotify
             </a>
+
+            <!-- Boutons actifs -->
              <a href="https://www.tiktok.com/@frenchzonemusic" class="link-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-icon"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5v2a7 7 0 0 1-7-7z"/></svg>
                 TikTok
@@ -299,19 +382,53 @@
 
         <footer>
             <div class="social-icons-row">
-                <a href="#" class="social-mini"><i data-lucide="facebook" width="18"></i></a>
-                <a href="#" class="social-mini"><i data-lucide="instagram" width="18"></i></a>
-                <a href="#" class="social-mini"><i data-lucide="mail" width="18"></i></a>
             </div>
-            <span>FrenchZone © 2024. All rights reserved.</span>
+            <span>FrenchZone © 2026. All rights reserved.</span>
         </footer>
 
+    </div>
+
+    <!-- MODALE POUR PRE-SAVE -->
+    <div id="presave-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()"><i data-lucide="x"></i></button>
+            <!-- L'iframe qui charge la page DistroKid -->
+            <iframe src="https://distrokid.com/hyperfollow/frenchzone/raclette-cest-super-chouette" 
+                    class="embed-frame" 
+                    title="Pre-save FrenchZone">
+            </iframe>
+            <!-- Lien de secours si l'iframe est bloquée -->
+            <div class="fallback-link">
+                Ça ne charge pas ? <a href="https://distrokid.com/hyperfollow/frenchzone/raclette-cest-super-chouette" target="_blank">Ouvrir la page complète</a>
+            </div>
+        </div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // --- 1. CONFIGURATION CANVAS ---
+        // --- GESTION DE LA MODALE ---
+        function openModal() {
+            const modal = document.getElementById('presave-modal');
+            modal.classList.add('active');
+            // Réinitialise les icônes dans la modale (pour le bouton fermer)
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('presave-modal');
+            modal.classList.remove('active');
+        }
+
+        // Fermer la modale si on clique en dehors
+        document.getElementById('presave-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+
+        // --- CONFIGURATION CANVAS & PARTICULES ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         const bgImage = document.getElementById('bg-image');
@@ -325,17 +442,15 @@
             baseColor: '255, 59, 59' // Rouge manuel (R, G, B)
         };
 
-        // --- 2. AFFICHAGE IMAGE (Plus d'analyse couleur) ---
+        // --- AFFICHAGE IMAGE ---
         bgImage.onload = function() {
-            // On affiche juste l'image quand elle est prête
             bgImage.style.opacity = 1;
         };
-        // Au cas où elle est déjà chargée (cache)
         if(bgImage.complete) {
              bgImage.style.opacity = 1;
         }
 
-        // --- 3. SYSTEME DE PARTICULES ---
+        // --- SYSTEME DE PARTICULES ---
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
