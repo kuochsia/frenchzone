@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FrenchZone - Officiel</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -79,14 +80,15 @@
         /* --- HEADER --- */
         header { margin-bottom: 25px; }
 
-        header h1 {
-            font-size: 2.8rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin: 0;
-            /* Pas de uppercase pour garder FrenchZone */
-            color: white;
-            text-shadow: 0 0 30px var(--accent-color);
+        /* Style spécifique pour le logo image */
+        .logo-img {
+            width: 220px; /* Taille ajustée pour la présence visuelle */
+            max-width: 80%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            /* Effet de lueur rouge autour du logo PNG transparent */
+            filter: drop-shadow(0 0 15px var(--accent-color));
         }
 
         .subtitle {
@@ -325,12 +327,12 @@
     <div class="container">
         
         <header>
-            <h1>FrenchZone</h1>
+            <img src="https://frenchzonemusic.fr/FZ.white09.png" alt="FrenchZone" class="logo-img">
         </header>
 
         <div class="visual-container">
             <div class="badge-overlay">
-                <span class="live-dot"></span> New Release
+                <span class="live-dot"></span> Prochainement
             </div>
             <img src="https://kuochsia.github.io/frenchzone/Raclette.cover.small.png" 
                  alt="FrenchZone Visual" 
